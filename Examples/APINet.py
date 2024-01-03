@@ -57,8 +57,8 @@ class APINetTrainer(Trainer):
 
     def batch_training(self, data):
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
-
-        outputs = self.model(images, labels, flag='train')
+		# Cho mô hình validation
+        outputs = self.model(images, labels, flag='val')
         # logit1_self, logit1_other, logit2_self, logit2_other, labels1, labels2 = outputs
         self_logits, other_logits, labels1, labels2 = outputs
         loss = self.criterion(outputs, labels)

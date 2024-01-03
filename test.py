@@ -9,7 +9,8 @@ from dataset.dataset import FGDataset
 from torchvision import transforms
 from model.registry import MODEL
 from utils import PerformanceMeter, TqdmHandler, AverageMeter, accuracy
-
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 class Tester(object):
     """Test a model from a config which could be a training config.
@@ -26,8 +27,7 @@ class Tester(object):
             os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(i) for i in self.device])
             self.logger.info(f'Using GPU: {self.device}')
         else:
-            self.logger.info(f'Using CPU！')
-
+            self.logger.info(f'Using CPU!')
         # build dataloader and model
         self.transformer = self.get_transformer(self.config.dataset.transformer)
         self.collate_fn = self.get_collate_fn()
@@ -37,10 +37,15 @@ class Tester(object):
         self.model = self.get_model(self.config.model)
         self.model = self.to_device(self.model, parallel=True)
         self.logger.info(f'Building model {self.config.model.name} OK!')
-
+        
         # build meters
         self.performance_meters = self.get_performance_meters()
         self.average_meters = self.get_average_meters()
+        
+        # Confusion matrix
+        self.all_predicted_labels = []
+        self.all_true_labels = []
+        self.labels = ['Aedes', 'Anopheles', 'Culex']
 
     def get_logger(self):
         logger = logging.getLogger()
@@ -119,22 +124,47 @@ class Tester(object):
         self.validate()
         self.performance_meters['acc'].update(self.average_meters['acc'].avg)
         self.report()
-
+    
     def validate(self):
         self.model.train(False)
-
         with torch.no_grad():
             val_bar = tqdm(self.dataloader, ncols=100)
             for data in val_bar:
-                self.batch_validate(data)
+                
+                logits, labels = self.batch_validate(data)
+                predicted_labels = torch.argmax(logits, dim=1).cpu().numpy()  # Assuming logits are probabilities
+                true_labels = labels.cpu().numpy()
+                self.all_predicted_labels.extend(predicted_labels)
+                self.all_true_labels.extend(true_labels)
+                # calculate_and_plot_metrics(logits, labels)
+                # Generate and plot confusion matrix after all predictions
+                if len(self.all_predicted_labels) == len(self.dataset):  # Check if all data is processed
+                    cm = confusion_matrix(self.all_true_labels, self.all_predicted_labels)
+                    plt.figure(figsize=(8, 6))
+                    plt.imshow(cm, cmap='Blues', vmin=0, vmax=len(self.dataset))
+
+                    for i in range(cm.shape[0]):
+                        for j in range(cm.shape[1]):
+                            plt.text(j, i, str(cm[i, j]), ha='center', va='center')
+                    # Set labels for x-axis and y-axis
+                    plt.xticks(list(range(len(self.labels))), self.labels, rotation=45)
+                    plt.yticks(list(range(len(self.labels))), self.labels)
+                    plt.ylabel("True label",fontsize=12)
+                    plt.title("Predict label")
+                    
+                    plt.show() 
                 val_bar.set_description(f'Testing')
                 val_bar.set_postfix(acc=self.average_meters['acc'].avg)
 
     def batch_validate(self, data):
+
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
         logits = self.model(images)
+
         acc = accuracy(logits, labels, 1)
+        
         self.average_meters['acc'].update(acc, images.size(0))
+        return logits,labels
 
     def report(self):
         metric_str = '  '.join([f'{metric}: {self.performance_meters[metric].current_value:.2f}'

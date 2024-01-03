@@ -24,7 +24,7 @@ class APINet(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.device = None
 
-    def forward(self, images, targets=None, flag='train'):
+    def forward(self, images, targets=None, flag='val'):
         self.device = images.device
         batch_size = images.size(0) * 2
         conv_out = self.backbone(images)
@@ -60,8 +60,8 @@ class APINet(nn.Module):
             logit2_self = self.fc(self.drop(features2_self))
             logit2_other = self.fc(self.drop(features2_other))
 
-            self_logits = torch.zeros(2 * batch_size, 200).to(self.device)
-            other_logits = torch.zeros(2 * batch_size, 200).to(self.device)
+            self_logits = torch.zeros(2 * batch_size, 3).to(self.device)
+            other_logits = torch.zeros(2 * batch_size, 3).to(self.device)
             self_logits[:batch_size] = logit1_self
             self_logits[batch_size:] = logit2_self
             other_logits[:batch_size] = logit1_other
