@@ -66,7 +66,7 @@ class DatasetSplitter:
         with open(file_name, 'w') as file:
             for label_idx, image_path in sorted(images):
                 image_path =  transform_image_path(image_path)
-                label = str(label_idx-1)
+                label = str(label_idx)
                 line = f'{label} {image_path}\n'
                 file.write(line)
 
