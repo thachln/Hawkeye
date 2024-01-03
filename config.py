@@ -26,7 +26,7 @@ def _parse_args():
 
 
 def _get_default_config():
-    BASE_CONFIG_PATH = 'configs/Baseline.yaml'
+    BASE_CONFIG_PATH = 'configs/test.yaml'
     with open(BASE_CONFIG_PATH) as f:
         cfg = CN.load_cfg(f)
     return cfg

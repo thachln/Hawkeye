@@ -1,16 +1,16 @@
 experiment:
-  name: test_bcnn
+  name: API_res50 1
   cuda: [0]
 dataset:
-  name: cub
-  root_dir: data/bird/CUB_200_2011/images
-  meta_dir: metadata/cub
-  batch_size: 32
+  name: 
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 24
   num_workers: 4
   transformer:
-    resize_size: 448
-    image_size: 448
+    resize_size: 300
+    image_size: 224
 model:
-  name: BCNN
-  num_classes: 200
-  load: results/bcnn/best_model.pth
+  name: APINet
+  num_classes: 3
+  load: results/APINet/API_res50 1/best_model.pth
