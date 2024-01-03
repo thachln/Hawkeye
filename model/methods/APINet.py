@@ -2,8 +2,9 @@ import torch
 from torch import nn
 import numpy as np
 
-from model.backbone import resnet101, resnet50
+from model.backbone import resnet50
 from model.registry import MODEL
+
 
 
 @MODEL.register
@@ -12,7 +13,7 @@ class APINet(nn.Module):
         super(APINet, self).__init__()
         self.num_classes = config.num_classes
 
-        resnet = resnet101(pretrained=True)
+        resnet = resnet50(pretrained=True)
         layers = list(resnet.children())[:-2]
 
         self.backbone = nn.Sequential(*layers)
@@ -60,8 +61,8 @@ class APINet(nn.Module):
             logit2_self = self.fc(self.drop(features2_self))
             logit2_other = self.fc(self.drop(features2_other))
 
-            self_logits = torch.zeros(2 * batch_size, 3).to(self.device)
-            other_logits = torch.zeros(2 * batch_size, 3).to(self.device)
+            self_logits = torch.zeros(2 * batch_size, self.num_classes).to(self.device)
+            other_logits = torch.zeros(2 * batch_size, self.num_classes).to(self.device)
             self_logits[:batch_size] = logit1_self
             self_logits[batch_size:] = logit2_self
             other_logits[:batch_size] = logit1_other

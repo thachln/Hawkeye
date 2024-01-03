@@ -8,12 +8,13 @@ from dataset.sampler import BalancedBatchSampler
 from model.loss.APINet_loss import APINetLoss
 from train import Trainer
 from utils import accuracy
+from model.registry import MODEL
 
 
 class APINetTrainer(Trainer):
     def __init__(self):
         super(APINetTrainer, self).__init__()
-
+        
     def get_dataloader(self, config):
         # APINet use `BalancedBatchSampler` to sample a fixed number of categories
         # and a fixed number of samples in each category.
@@ -30,7 +31,7 @@ class APINetTrainer(Trainer):
 
     def get_criterion(self, config):
         return APINetLoss(config)
-
+    
     def get_optimizer(self, config):
         model = self.get_model_module()
         backbone_param_ids = list(map(id, model.backbone.parameters()))

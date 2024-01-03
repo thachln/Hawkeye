@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from yacs.config import CfgNode as CN
-
+import matplotlib.pyplot as plt
 
 class PerformanceMeter(object):
     """Record the performance metric during training
@@ -64,7 +64,6 @@ def accuracy(scores, targets, k):
     correct = ind.eq(targets.view(-1, 1).expand_as(ind))
     correct_total = correct.view(-1).float().sum()  # 0D tensor
     return correct_total.item() * (100.0 / batch_size)
-
 
 class TqdmHandler(logging.StreamHandler):
     def __init__(self):
