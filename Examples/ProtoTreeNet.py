@@ -103,8 +103,7 @@ class MyTrainer(Trainer):
     def batch_training(self, data):
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
         self.optimizer.zero_grad()
-
-        outputs = self.model(images, labels)
+        outputs = self.model(images)
         pred, info = outputs
         loss = self.criterion(torch.log(pred), labels)
 

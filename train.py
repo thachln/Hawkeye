@@ -12,7 +12,7 @@ from dataset.dataset import FGDataset
 from dataset.transforms import ClassificationPresetTrain, ClassificationPresetEval
 from model.registry import MODEL
 from utils import PerformanceMeter, TqdmHandler, set_random_seed, AverageMeter, accuracy, Timer
-
+from dataset.metadata import create_folder
 
 def emergency_save(func):
     """ Save checkpoint when `KeyboardInterrupt` or other errors occur.
@@ -52,9 +52,10 @@ class Trainer(object):
 
         # log root directory should not already exist
         if not self.resume and not self.debug:
-            assert not os.path.exists(self.log_root), 'Experiment log folder already exists!!'
+            # assert not os.path.exists(self.log_root), 'Experiment log folder already exists!!'
             # create log root directory and copy
-            os.makedirs(self.log_root)
+            # os.makedirs(self.log_root)
+            create_folder(self.log_root)
             print(f'Created log directory: {self.log_root}')
             # copy yaml file and train.py
             with open(os.path.join(self.log_root, 'train_config.yaml'), 'w') as f:
@@ -158,7 +159,7 @@ class Trainer(object):
     def get_model(self, config):
         """Build and load model in config
         """
-        name = config.name
+        name = config.name 
         model = MODEL.get(name)(config)
 
         if 'load' in config and config.load != '':
