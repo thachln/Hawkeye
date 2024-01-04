@@ -48,6 +48,8 @@ class ImageAugmenter:
 
                             img = io.imread(file)
                             transformed_image = self.available_transformations[transform_key](img)
+                            transformed_image = transformed_image.astype(float)
+                            transformed_image /= np.max(transformed_image)
                             transformed_image = (transformed_image * 255).astype(np.uint8)
 
                             new_file_name = f"{transform_key}_{file.stem}_{num_augmented_images}.jpg"
@@ -66,10 +68,10 @@ class ImageAugmenter:
         return util.random_noise(image_array)  # Assuming util.random_noise is defined elsewhere
 
     def horizontal_flip(self, image_array: np.ndarray) -> np.ndarray:
-        return image_array[:, ::-1]
+        return np.fliplr(image_array)
 
     def vertical_flip(self, image_array: np.ndarray) -> np.ndarray:
-        return image_array[::-1, :]
+        return np.flipud(image_array)
 
 if __name__ == '__main__':
     # Example usage

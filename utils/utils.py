@@ -105,3 +105,103 @@ def set_random_seed(seed):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
+    
+def map_generate(attention_map, pred, p1, p2):
+    batches, feaC, feaH, feaW = attention_map.size()
+
+    out_map=torch.zeros_like(attention_map.mean(1))
+
+    for batch_index in range(batches):
+        map_tpm = attention_map[batch_index]
+        map_tpm = map_tpm.reshape(feaC, feaH*feaW)
+        map_tpm = map_tpm.permute([1, 0])
+        p1_tmp = p1.permute([1, 0])
+        map_tpm = torch.mm(map_tpm, p1_tmp)
+        map_tpm = map_tpm.permute([1, 0])
+        map_tpm = map_tpm.reshape(map_tpm.size(0), feaH, feaW)
+
+        pred_tmp = pred[batch_index]
+        pred_ind = pred_tmp.argmax()
+        p2_tmp = p2[pred_ind].unsqueeze(1)
+
+        map_tpm = map_tpm.reshape(map_tpm.size(0), feaH * feaW)
+        map_tpm = map_tpm.permute([1, 0])
+        map_tpm = torch.mm(map_tpm, p2_tmp)
+        out_map[batch_index] = map_tpm.reshape(feaH, feaW)
+
+    return out_map
+
+def attention_im(images, attention_map, theta=0.5, padding_ratio=0.1):
+    images = images.clone()
+    attention_map = attention_map.clone().detach()
+    batches, _, imgH, imgW = images.size()
+
+    for batch_index in range(batches):
+        image_tmp = images[batch_index]
+        map_tpm = attention_map[batch_index].unsqueeze(0).unsqueeze(0)
+        map_tpm = torch.nn.functional.upsample_bilinear(map_tpm, size=(imgH, imgW)).squeeze()
+        map_tpm = (map_tpm - map_tpm.min()) / (map_tpm.max() - map_tpm.min() + 1e-6)
+        map_tpm = map_tpm >= theta
+        nonzero_indices = torch.nonzero(map_tpm, as_tuple=False)
+        height_min = max(int(nonzero_indices[:, 0].min().item() - padding_ratio * imgH), 0)
+        height_max = min(int(nonzero_indices[:, 0].max().item() + padding_ratio * imgH), imgH)
+        width_min = max(int(nonzero_indices[:, 1].min().item() - padding_ratio * imgW), 0)
+        width_max = min(int(nonzero_indices[:, 1].max().item() + padding_ratio * imgW), imgW)
+
+        image_tmp = image_tmp[:, height_min:height_max, width_min:width_max].unsqueeze(0)
+        image_tmp = torch.nn.functional.upsample_bilinear(image_tmp, size=(imgH, imgW)).squeeze()
+
+        images[batch_index] = image_tmp
+
+    return images
+
+
+
+def highlight_im(images, attention_map, attention_map2, attention_map3, theta=0.5, padding_ratio=0.1):
+    images = images.clone()
+    attention_map = attention_map.clone().detach()
+    attention_map2 = attention_map2.clone().detach()
+    attention_map3 = attention_map3.clone().detach()
+
+    batches, _, imgH, imgW = images.size()
+
+    for batch_index in range(batches):
+        image_tmp = images[batch_index]
+        map_tpm = attention_map[batch_index].unsqueeze(0).unsqueeze(0)
+        map_tpm = torch.nn.functional.upsample_bilinear(map_tpm, size=(imgH, imgW)).squeeze()
+        map_tpm = (map_tpm - map_tpm.min()) / (map_tpm.max() - map_tpm.min() + 1e-6)
+
+
+        map_tpm2 = attention_map2[batch_index].unsqueeze(0).unsqueeze(0)
+        map_tpm2 = torch.nn.functional.upsample_bilinear(map_tpm2, size=(imgH, imgW)).squeeze()
+        map_tpm2 = (map_tpm2 - map_tpm2.min()) / (map_tpm2.max() - map_tpm2.min() + 1e-6)
+
+        map_tpm3 = attention_map3[batch_index].unsqueeze(0).unsqueeze(0)
+        map_tpm3 = torch.nn.functional.upsample_bilinear(map_tpm3, size=(imgH, imgW)).squeeze()
+        map_tpm3 = (map_tpm3 - map_tpm3.min()) / (map_tpm3.max() - map_tpm3.min() + 1e-6)
+
+        map_tpm = (map_tpm + map_tpm2 + map_tpm3)
+        map_tpm = (map_tpm - map_tpm.min()) / (map_tpm.max() - map_tpm.min() + 1e-6)
+        map_tpm = map_tpm >= theta
+
+        nonzero_indices = torch.nonzero(map_tpm, as_tuple=False)
+        height_min = max(int(nonzero_indices[:, 0].min().item() - padding_ratio * imgH), 0)
+        height_max = min(int(nonzero_indices[:, 0].max().item() + padding_ratio * imgH), imgH)
+        width_min = max(int(nonzero_indices[:, 1].min().item() - padding_ratio * imgW), 0)
+        width_max = min(int(nonzero_indices[:, 1].max().item() + padding_ratio * imgW), imgW)
+
+        image_tmp = image_tmp[:, height_min:height_max, width_min:width_max].unsqueeze(0)
+        image_tmp = torch.nn.functional.upsample_bilinear(image_tmp, size=(imgH, imgW)).squeeze()
+
+        images[batch_index] = image_tmp
+
+    return images
+
+
+
+def cosine_anneal_schedule(t, nb_epoch, lr):
+    cos_inner = np.pi * (t % (nb_epoch))  # t - 1 is used when t has 1-based indexing.
+    cos_inner /= (nb_epoch)
+    cos_out = np.cos(cos_inner) + 1
+
+    return float(lr / 2 * cos_out)
