@@ -14,7 +14,7 @@ dataset:
   num_workers: 4
   transformer:
     image_size: 224
-    resize_size: 400
+    resize_size: 256
 model:
   name: APINet
   num_classes: 3
