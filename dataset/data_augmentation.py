@@ -1,3 +1,4 @@
+import sys
 import skimage
 from scipy import ndarray
 from skimage import io, transform, util
@@ -9,7 +10,7 @@ import os
 
 # Define the class for image augmentation
 class ImageAugmenter:
-    def __init__(self, folder_path: str, augmented_path: str, target_images_per_folder: int = 1200):
+    def __init__(self, folder_path: str, augmented_path: str, target_images_per_folder: int = 128):
         self.folder_path = Path(folder_path)
         self.augmented_path = Path(augmented_path)
         self.target_images_per_folder = target_images_per_folder
@@ -75,5 +76,15 @@ class ImageAugmenter:
 
 if __name__ == '__main__':
     # Example usage
-    augmenter = ImageAugmenter(folder_path='./data/dataset/', augmented_path='./data/dataset_mosquito/')
+    #  data_augmentation.py <folder_path> <augmented_path>
+    if len(sys.argv) < 2:
+        print('Usage: data_augmentation.py [folder_path] [augmented_path]')
+        print('Default: folder_path=./data/dataset/; ./data/dataset_mosquito/')
+
+    folder_path = sys.argv[1] if len(sys.argv) > 1 else './data/dataset/'
+    augmented_path = sys.argv[2] if len(sys.argv) > 2 else './data/dataset_mosquito/'
+
+    print('Running with folder_path=%s, augmented_path=%s\n' % (folder_path, augmented_path))
+
+    augmenter = ImageAugmenter(folder_path=folder_path, augmented_path=augmented_path)
     augmenter.augment_images()
