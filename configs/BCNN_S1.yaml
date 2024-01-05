@@ -4,17 +4,18 @@ experiment:
   cuda: [0]
   seed: 0
 dataset:
-  name: cub
-  root_dir: data/bird/CUB_200_2011/images
-  meta_dir: metadata/cub
-  batch_size: 8
-  num_workers: 2
+  name: mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 24
+  num_workers: 4
   transformer:
-    image_size: 448
+    image_size: 224
+    resize_size: 256
 model:
   name: BCNN
   stage: 1  # Training stage for BCNN. Stage 1 freeze backbone parameters.
-  num_classes: 200
+  num_classes: 3
 train:
   epoch: 55
   save_frequence: 5

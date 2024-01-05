@@ -312,7 +312,7 @@ class Trainer(object):
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
 
         # forward
-        outputs = self.model(images)
+        outputs = self.model(images, labels)
         loss = self.criterion(outputs, labels)
 
         # backward
@@ -341,7 +341,7 @@ class Trainer(object):
     def batch_validate(self, data):
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
 
-        logits = self.model(images)
+        logits = self.model(images, labels)
         acc = accuracy(logits, labels, 1)
         self.average_meters['acc'].update(acc, images.size(0))
 
@@ -438,3 +438,4 @@ class Trainer(object):
 if __name__ == '__main__':
     trainer = Trainer()
     trainer.train()
+    

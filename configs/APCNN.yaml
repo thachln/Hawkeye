@@ -4,20 +4,20 @@ experiment:
   cuda: [0]               # The list of gpu to use. `[]` for cpu only.
   seed: 42                # Fix the random seed. `None` for random.
 dataset:
-  name: cub
-  root_dir: data/bird/CUB_200_2011/images
-  meta_dir: metadata/cub
-  batch_size: 16
-  num_workers: 2
+  name: mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 24
+  num_workers: 4
   transformer:
-    image_size: 448
-    resize_size: 512
+    image_size: 224
+    resize_size: 256
 model:
   name: APCNN
-  num_classes: 200
+  num_classes: 3
 train:
   epoch: 100
-  save_frequence: 100
+  save_frequence: 50
   optimizer:
     name: SGD
     lr: 0.0005

@@ -2,9 +2,8 @@ import torch
 from torch import nn
 import numpy as np
 
-from model.backbone import resnet50
+from model.backbone import resnet101, resnet50
 from model.registry import MODEL
-
 
 
 @MODEL.register
@@ -13,7 +12,7 @@ class APINet(nn.Module):
         super(APINet, self).__init__()
         self.num_classes = config.num_classes
 
-        resnet = resnet50(pretrained=True)
+        resnet = resnet101(pretrained=True)
         layers = list(resnet.children())[:-2]
 
         self.backbone = nn.Sequential(*layers)
@@ -25,7 +24,7 @@ class APINet(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.device = None
 
-    def forward(self, images, targets=None, flag='val'):
+    def forward(self, images, targets=None, flag='val'):        
         self.device = images.device
         batch_size = images.size(0) * 2
         conv_out = self.backbone(images)
@@ -115,6 +114,7 @@ class APINet(nn.Module):
 
 
 def pdist(vectors):
+    # print(vectors.size()) # [12,2048]
     distance_matrix = -2 * vectors.mm(torch.t(vectors)) + vectors.pow(2).sum(dim=1).view(1, -1) \
                       + vectors.pow(2).sum(dim=1).view(-1, 1)
     return distance_matrix

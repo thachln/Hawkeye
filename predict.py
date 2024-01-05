@@ -68,10 +68,10 @@ class Predictor():
     
     def get_transformer(self, config):
         return transforms.Compose([
-            transforms.Resize(size=config.resize_size),
-            transforms.CenterCrop(size=config.image_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+                transforms.Resize((config.resize_size, config.resize_size)),
+                transforms.CenterCrop(config.image_size),
+                transforms.ToTensor(),
+                # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
         
     #
@@ -80,34 +80,59 @@ class Predictor():
         image = Image.open(image_path).convert('RGB')
         image = self.transformer(image).unsqueeze(0)  # Add batch dimension
         image = self.to_device(image)
-        # print(np.max(image))
-        # print(np.min(image))
-        # image = (image / 255.0)
 
-        with torch.no_grad():
-            logits = self.model(image)
-            # Get probabilities for each class
-            probabilities = torch.nn.functional.softmax(logits, dim=0).cpu().numpy()
-            predicted_label = torch.argmax(logits, dim=-1).item()
+        if self.config.get('model', {}).get('name', None) == 'APCNN':
+            with torch.no_grad():
+                logits,_,_,_ = self.model(image, 0)
+                # Get probabilities for each class
+                probabilities = torch.nn.functional.softmax(logits, dim=1).cpu().numpy()
+                predicted_label = torch.argmax(logits, dim=-1).item()
 
-        # Display the image
-        plt.figure(figsize=(10, 4))
-        plt.subplot(1, 2, 1)
-        plt.imshow(image.squeeze(0).permute(2,1,0).cpu().numpy())  # Rearrange for Matplotlib
-        # )
-        plt.title(f"Predicted class: {self.labels[predicted_label]} (Probability: {probabilities[predicted_label]:.2%}) ")
 
-        # Display a bar chart of the prediction probabilities
-        plt.subplot(1, 2, 2)
-        plt.bar(np.arange(len(probabilities)), probabilities)
-        plt.xticks(np.arange(len(probabilities)), self.labels, rotation='vertical')
-        plt.title("Prediction probabilities for each class")
+            plt.figure(figsize=(10, 4))
+            plt.subplot(1, 2, 1)
+            plt.imshow(image.squeeze(0).permute(2,1,0).cpu().numpy())  # Rearrange for Matplotlib
+            # )
+            plt.title(f"Predicted class: {self.labels[predicted_label]} (Probability: {probabilities[0][predicted_label]:.2%}) ")
 
-        plt.tight_layout()
-        plt.show()
+            # Display a bar chart of the prediction probabilities
+            plt.subplot(1, 2, 2)
+            plt.bar(np.arange(len(probabilities[0])), probabilities[0])
+            plt.xticks(np.arange(len(probabilities[0])), self.labels, rotation='vertical')
+            plt.title("Prediction probabilities for each class")
+
+            plt.tight_layout()
+            plt.show()
+        
+        else:
+            # print(np.max(image))
+            # print(np.min(image))
+            # image = (image / 255.0)
+
+            with torch.no_grad():
+                logits = self.model(image)
+                # Get probabilities for each class
+                probabilities = torch.nn.functional.softmax(logits, dim=0).cpu().numpy()
+                predicted_label = torch.argmax(logits, dim=-1).item()
+
+            # Display the image
+            plt.figure(figsize=(10, 4))
+            plt.subplot(1, 2, 1)
+            plt.imshow(image.squeeze(0).permute(1, 2, 0).cpu().numpy())  # Rearrange for Matplotlib
+            # )
+            plt.title(f"Predicted class: {self.labels[predicted_label]} (Probability: {probabilities[predicted_label]:.2%}) ")
+
+            # Display a bar chart of the prediction probabilities
+            plt.subplot(1, 2, 2)
+            plt.bar(np.arange(len(probabilities)), probabilities)
+            plt.xticks(np.arange(len(probabilities)), self.labels, rotation='vertical')
+            plt.title("Prediction probabilities for each class")
+
+            plt.tight_layout()
+            plt.show()
 
 
 if __name__ == '__main__':
     predictor = Predictor()
-    image_path = 'predict_image/1.jpg'  # Replace with the actual image path
+    image_path = 'LargeImage_dataset2\Aedes_B\\1.jpg'  # Replace with the actual image path
     predictor.predict(image_path)

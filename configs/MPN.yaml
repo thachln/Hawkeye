@@ -4,10 +4,10 @@ experiment:
   cuda: [0]
   seed: 42
 dataset:
-  name: cub
-  root_dir: data/bird/CUB_200_2011/images
-  meta_dir: metadata/cub
-  batch_size: 8
+  name: mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 24
   num_workers: 4
   transformer:
     image_size: 224
@@ -19,7 +19,7 @@ model:
   is_vec: True    # Whether the output is a vector or not.
   input_dim: 2048 # Channel of input feature.
   dimension_reduction: 256  # To reduce the channel of feature. None if pretrained else 256.
-  num_classes: 200
+  num_classes: 3
 train:
   epoch: 100
   save_frequence: 40

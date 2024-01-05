@@ -1,5 +1,5 @@
 experiment:
-  name: API_res50 1
+  name: APCNN
   cuda: [0]
 dataset:
   name: 
@@ -8,9 +8,9 @@ dataset:
   batch_size: 24
   num_workers: 4
   transformer:
-    resize_size: 300
+    resize_size: 256
     image_size: 224
 model:
-  name: APINet
+  name: APCNN
   num_classes: 3
-  load: results/APINet/API_res50 1/best_model.pth
+  load: results/APCNN/AP 1/APCNN_epoch_100.pth

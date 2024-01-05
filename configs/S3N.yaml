@@ -5,24 +5,24 @@ experiment:
   seed: 42
 #  resume: results/S3N/S3N 2/checkpoint_epoch_20.pth
 dataset:
-  name: cub
-  root_dir: data/bird/CUB_200_2011/images
-  meta_dir: metadata/cub
-  batch_size: 8
-  num_workers: 0
+  name: mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 16
+  num_workers: 4
   transformer:
-    image_size: 448
-    resize_size: 600
+    image_size: 224
+    resize_size: 256
 model:
   name: S3N
-  image_size: 448
-  num_classes: 200
+  image_size: 224
+  num_classes: 3
   radius: 0.12      # Radius of each sparse attention control sampling scale of the corresponding visual evidence
   radius_inv: 0.3   # Radius of complementary sparse attention.
   base_ratio: 0.09
 train:
   epoch: 100
-  save_frequence: 100
+  save_frequence: 50
   optimizer:
     name: SGD
     lr: 0.005              # x0.1 for backbone

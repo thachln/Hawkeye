@@ -82,11 +82,12 @@ class Tester(object):
 
     def get_transformer(self, config):
         return transforms.Compose([
-            transforms.Resize(size=config.resize_size),
-            transforms.CenterCrop(size=config.image_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-        ])
+                transforms.Resize((config.resize_size, config.resize_size)),
+                transforms.CenterCrop(config.image_size),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            ])
+
 
     def get_collate_fn(self):
         return None
@@ -159,10 +160,15 @@ class Tester(object):
     def batch_validate(self, data):
 
         images, labels = self.to_device(data['img']), self.to_device(data['label'])
-        logits = self.model(images)
-
-        acc = accuracy(logits, labels, 1)
         
+
+        if self.config.get('model', {}).get('name', None) == 'APCNN':
+            outputs = self.model(images, labels)
+            logits, logits_list, mask_cat, roi_list = outputs
+        else:
+            logits = self.model(images)
+
+        acc = accuracy(logits, labels, 1)  
         self.average_meters['acc'].update(acc, images.size(0))
         return logits,labels
 

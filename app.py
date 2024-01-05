@@ -12,6 +12,7 @@ from config import setup_config
 from model.registry import MODEL
 from utils import TqdmHandler
 
+config = setup_config()
 class Predictor():
     def __init__(self):
         self.config = setup_config()
@@ -69,7 +70,7 @@ class Predictor():
     
     def get_transformer(self, config):
         return transforms.Compose([
-            transforms.Resize(size=config.resize_size),
+            transforms.Resize((config.resize_size,config.resize_size)),
             transforms.CenterCrop(size=config.image_size),
             transforms.ToTensor(),
             transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
@@ -91,21 +92,30 @@ def main():
         image = predictor.transformer(image).unsqueeze(0)  # Add batch dimension
         image = predictor.to_device(image)
 
-        with torch.no_grad():
-            logits = predictor.model(image)
-            probabilities = torch.nn.functional.softmax(logits, dim=0).cpu().numpy()
-            predicted_label = torch.argmax(logits, dim=-1).item()
+        if config.get('model', {}).get('name', None) == 'APCNN':
+            with torch.no_grad():
+                logits,_,_,_ = predictor.model(image, 0)
+                # Get probabilities for each class
+                probabilities = torch.nn.functional.softmax(logits, dim=1).cpu().numpy()[0]
+                predicted_label = torch.argmax(logits, dim=-1).item()
+
+        else:
+            with torch.no_grad():
+                logits = predictor.model(image)
+                probabilities = torch.nn.functional.softmax(logits, dim=0).cpu().numpy()
+                predicted_label = torch.argmax(logits, dim=-1).item()
 
         # Display predictions
         st.subheader("Prediction:")
         st.write(f"Predicted class: {predictor.labels[predicted_label]}")
+        # print(probabilities)
         st.write(f"Probability: {probabilities[predicted_label]:.2%}")
 
         # Display the image and bar chart
         st.subheader("Image and Prediction Probabilities:")
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
-        ax1.imshow(image.squeeze(0).permute(2, 1, 0).cpu().numpy())
+        ax1.imshow(image.squeeze(0).permute(1, 2, 0).cpu().numpy())
         ax1.set_title(f"Predicted class: {predictor.labels[predicted_label]}")
 
         ax2.bar(np.arange(len(probabilities)), probabilities)
@@ -114,6 +124,6 @@ def main():
         ax2.set_title("Prediction probabilities for each class")
 
         st.pyplot(fig)
-
+        
 if __name__ == "__main__":
     main()
