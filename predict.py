@@ -70,7 +70,7 @@ class Predictor():
         return transforms.Compose([
                 transforms.Resize((config.resize_size, config.resize_size)),
                 transforms.CenterCrop(config.image_size),
-                transforms.ToTensor()
+                transforms.ToTensor(),
             ])
         
     #

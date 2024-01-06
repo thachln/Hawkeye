@@ -84,8 +84,7 @@ class Tester(object):
         return transforms.Compose([
                 transforms.Resize((config.resize_size, config.resize_size)),
                 transforms.CenterCrop(config.image_size),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                transforms.ToTensor()
             ])
 
 

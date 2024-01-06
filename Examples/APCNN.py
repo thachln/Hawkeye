@@ -22,14 +22,12 @@ class APCNNTrainer(Trainer):
                 transforms.RandomCrop(config.image_size),
                 transforms.RandomHorizontalFlip(),
                 autoaugment.TrivialAugmentWide(interpolation=InterpolationMode.BILINEAR),
-                transforms.ToTensor(),
-                transforms.Normalize([0.7112, 0.6570, 0.5664], [0.0842, 0.0712, 0.1019]),
+                transforms.ToTensor()
             ]),
             'val': transforms.Compose([
                 transforms.Resize((config.resize_size, config.resize_size)),
                 transforms.CenterCrop(config.image_size),
-                transforms.ToTensor(),
-                transforms.Normalize([0.7112, 0.6570, 0.5664], [0.0842, 0.0712, 0.1019]),
+                transforms.ToTensor()
             ])
         }
 

@@ -3,8 +3,8 @@ experiment:
   cuda: [0]
 dataset:
   name: 
-  root_dir: data/LargeImage_dataset2_mosquito
-  meta_dir: metadata/dataset2_mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
   batch_size: 24
   num_workers: 4
   transformer:
@@ -13,4 +13,4 @@ dataset:
 model:
   name: APCNN
   num_classes: 3
-  load: results/APCNN/AP 2/APCNN_epoch_10.pth
+  load: results/APCNN/AP 1/best_model.pth

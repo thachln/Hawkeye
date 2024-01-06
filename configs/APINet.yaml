@@ -1,5 +1,5 @@
 experiment:
-  name: API_res101 1        # The name of experiment.
+  name: API_res101 2        # The name of experiment.
   log_dir: results/APINet   # Log directory of the experiment.
   cuda: [0]                 # The list of gpu to use. `[]` for cpu only.
   seed: 42                  # Fix the random seed. `None` for random.
@@ -13,8 +13,8 @@ dataset:
   batch_size: 24  # For validating stage only.
   num_workers: 4
   transformer:
-    image_size: 224
-    resize_size: 256
+    image_size: 448
+    resize_size: 600
 model:
   name: APINet
   num_classes: 3

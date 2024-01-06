@@ -17,17 +17,17 @@ class S3NTrainer(Trainer):
     def get_transformers(self, config):
         return {
             'train': torchvision.transforms.Compose([
-                torchvision.transforms.RandomResizedCrop(224, scale=(0.5, 1)),
+                torchvision.transforms.RandomResizedCrop(448, scale=(0.5, 1)),
                 torchvision.transforms.RandomHorizontalFlip(),
                 torchvision.transforms.ToTensor(),
-                torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+
             ]),
             'val': torchvision.transforms.Compose([
-                torchvision.transforms.Resize(224),
-                torchvision.transforms.CenterCrop(224),
-                torchvision.transforms.ToTensor(),
-                torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+                torchvision.transforms.Resize(448),
+                torchvision.transforms.CenterCrop(448),
+                torchvision.transforms.ToTensor()
             ])
+
         }
 
     def get_criterion(self, config):
