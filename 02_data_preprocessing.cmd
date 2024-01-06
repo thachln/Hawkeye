@@ -4,6 +4,7 @@ rem update pip
 python -m pip install --upgrade pip
 rem Giải nén file data/dataset.zip chạy trên windows sau đó copy dataset giải nen vào thư mục data
 pip install scikit-image
+pip install opencv-contrib-python
 rem chạy lệnh sau để tăng cường dữ liệu
 python dataset/data_augmentation.py
 rem Taoj file metadata
