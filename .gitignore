@@ -167,3 +167,4 @@ data/*
 model_weights/
 
 !.gitkeep
+/LargeImage_dataset2

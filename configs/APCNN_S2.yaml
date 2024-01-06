@@ -1,0 +1,30 @@
+experiment:
+  name: AP 2              # The name of experiment.
+  log_dir: results/APCNN  # Log directory of the experiment.
+  cuda: [0]               # The list of gpu to use. `[]` for cpu only.
+  seed: 42                # Fix the random seed. `None` for random.
+dataset:
+  name: mosquito
+  root_dir: data/dataset_mosquito
+  meta_dir: metadata/dataset_mosquito
+  batch_size: 8
+  num_workers: 4
+  transformer:
+    image_size: 448
+    resize_size: 512
+model:
+  name: APCNN
+  pretrain: true
+  load: results/APCNN/AP 1/best_model.pth  # Load model trained in stage 1.
+  num_classes: 3
+train:
+  epoch: 5
+  save_frequence: 5
+  optimizer:
+    name: SGD
+    lr: 0.0005
+    weight_decay: 0.0005
+  scheduler:
+    name: origin_code
+  criterion:
+    name: CrossEntropyLoss

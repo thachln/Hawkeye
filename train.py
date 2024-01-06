@@ -161,12 +161,25 @@ class Trainer(object):
         """
         name = config.name 
         model = MODEL.get(name)(config)
-
+        
         if 'load' in config and config.load != '':
             self.logger.info(f'Loading model from {config.load}')
             state_dict = torch.load(config.load, map_location='cpu')
             model.load_state_dict(state_dict)
             self.logger.info(f'OK! Model loaded from {config.load}')
+        
+        # if 'pretrain' in config and config.pretrain == True:
+        #     total_layers = len(list(model.parameters()))
+        #     unfrozen_layers = 1
+
+        #     for i, (name, param) in enumerate(model.named_parameters()):
+        #         if i < total_layers - unfrozen_layers:
+        #             param.requires_grad = False
+        #         else:
+        #             param.requires_grad = True
+        
+
+
         return model
 
     def get_transformers(self, config):

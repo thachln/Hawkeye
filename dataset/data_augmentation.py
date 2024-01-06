@@ -6,6 +6,8 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import os
+import argparse
+import cv2
 
 # Define the class for image augmentation
 class ImageAugmenter:
@@ -18,7 +20,8 @@ class ImageAugmenter:
             'rotate': self.random_rotation,
             'noise': self.random_noise,
             'horizontal_flip': self.horizontal_flip,
-            'vertical_flip': self.vertical_flip
+            'vertical_flip': self.vertical_flip,
+            'zoom_image': self.zoom_image
         }
 
     def augment_images(self):
@@ -72,8 +75,27 @@ class ImageAugmenter:
 
     def vertical_flip(self, image_array: np.ndarray) -> np.ndarray:
         return np.flipud(image_array)
+    
+    def zoom_image(self, image_array: np.ndarray, scale_factor= 5) -> np.ndarray:
+        # Calculate the new dimensions after zooming
+        new_height = int(image_array.shape[0] * scale_factor)
+        new_width = int(image_array.shape[1] * scale_factor)
+
+        # Use OpenCV to resize the image with interpolation
+        zoomed_image = cv2.resize(image_array, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+
+        return zoomed_image
 
 if __name__ == '__main__':
-    # Example usage
-    augmenter = ImageAugmenter(folder_path='./data/dataset/', augmented_path='./data/dataset_mosquito/')
+    parser = argparse.ArgumentParser(description='Data augmentation script')
+    parser.add_argument('--folder_path', type=str, default='./data/dataset/', nargs='?',
+                        help='Path to the input folder')
+    parser.add_argument('--augmented_path', type=str, default='./data/dataset_mosquito/', nargs='?',
+                        help='Path to the output folder for augmented images')
+
+    args = parser.parse_args()
+
+    print(f'Running with folder_path={args.folder_path}, augmented_path={args.augmented_path}\n')
+
+    augmenter = ImageAugmenter(folder_path=args.folder_path, augmented_path=args.augmented_path)
     augmenter.augment_images()

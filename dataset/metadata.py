@@ -2,6 +2,7 @@ import os
 import random
 from pathlib import Path
 import re
+import argparse
 
 def transform_image_path(img_path):
     # Replace all sample '/' to '\'
@@ -37,8 +38,9 @@ def create_folder(folder_path):
         print(f'Folders "{folder_path}" do exits.')
 
 class DatasetSplitter:
-    def __init__(self, dataset_dir, train_ratio=0.7):
+    def __init__(self, dataset_dir, folder_path, train_ratio=0.9):
         self.dataset_dir = Path(dataset_dir)
+        self.folder_path = folder_path
         self.train_ratio = train_ratio
         self.train_file = 'train.txt'
         self.val_file = 'val.txt'
@@ -56,11 +58,15 @@ class DatasetSplitter:
 
     def split_dataset(self):
         random.shuffle(self.image_paths)
+
         num_train = int(len(self.image_paths) * self.train_ratio)
         train_images = self.image_paths[:num_train]
         val_images = self.image_paths[num_train:]
-        self.write_to_file("metadata\dataset_mosquito\\"+self.train_file, train_images)
-        self.write_to_file("metadata\dataset_mosquito\\"+self.val_file, val_images)
+
+        train_file_path = os.path.join(self.folder_path, self.train_file)
+        val_file_path =  os.path.join(self.folder_path, self.val_file)
+        self.write_to_file(train_file_path, train_images)
+        self.write_to_file(val_file_path, val_images)
 
     def write_to_file(self, file_name, images):
         with open(file_name, 'w') as file:
@@ -75,9 +81,20 @@ class DatasetSplitter:
         self.split_dataset()
 
 if __name__ == '__main__':
-    create_folder('metadata\dataset_mosquito')
-    dataset_dir = 'data\dataset_mosquito'  # Replace with your actual path
-    rename_images_in_folder(dataset_dir)
-    splitter = DatasetSplitter(dataset_dir)
+    parser = argparse.ArgumentParser(description='Metadata processing script')
+    parser.add_argument('--folder_path', type=str, default='metadata\dataset_mosquito', nargs='?',
+                        help='Path to the metadata folder')
+    parser.add_argument('--dataset_dir', type=str, default='data\dataset_mosquito', nargs='?',
+                        help='Path to the dataset folder')
+
+    args = parser.parse_args()
+
+    print(f'Running with folder_path={args.folder_path}, dataset_dir={args.dataset_dir}\n')
+
+    create_folder(args.folder_path)
+    rename_images_in_folder(args.dataset_dir)
+
+    splitter = DatasetSplitter(args.dataset_dir, args.folder_path)
     splitter.run()
+
     print('Train and validation files have been created.')

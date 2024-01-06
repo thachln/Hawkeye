@@ -70,8 +70,7 @@ class Predictor():
         return transforms.Compose([
                 transforms.Resize((config.resize_size, config.resize_size)),
                 transforms.CenterCrop(config.image_size),
-                transforms.ToTensor(),
-                # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                transforms.ToTensor()
             ])
         
     #
@@ -134,5 +133,5 @@ class Predictor():
 
 if __name__ == '__main__':
     predictor = Predictor()
-    image_path = 'LargeImage_dataset2\Aedes_B\\1.jpg'  # Replace with the actual image path
+    image_path = 'data\dataset\culex\\culex (3).jpg'  # Replace with the actual image path
     predictor.predict(image_path)
