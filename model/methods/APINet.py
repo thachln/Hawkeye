@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import numpy as np
 
-from model.backbone import resnet50
+from model.backbone import resnet101
 from model.registry import MODEL
 
 
@@ -13,7 +13,7 @@ class APINet(nn.Module):
         super(APINet, self).__init__()
         self.num_classes = config.num_classes
 
-        resnet = resnet50(pretrained=True)
+        resnet = resnet101(pretrained=True)
         layers = list(resnet.children())[:-2]
 
         self.backbone = nn.Sequential(*layers)
@@ -25,7 +25,7 @@ class APINet(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.device = None
 
-    def forward(self, images, targets=None, flag='val'):
+    def forward(self, images, targets=None, flag='train'):
         self.device = images.device
         batch_size = images.size(0) * 2
         conv_out = self.backbone(images)
