@@ -84,8 +84,8 @@ if __name__ == '__main__':
         print('Usage: metadata.py [folder_path] [augmented_path]')
         print('Default: folder_path=metadata/dataset_mosquito; data/dataset_mosquito')
     
-    folder_path = sys.argv[1] if len(sys.argv) > 1 else 'metadata\dataset_mosquito'
-    dataset_dir = sys.argv[2] if len(sys.argv) > 2 else 'data\dataset_mosquito'
+    folder_path = sys.argv[1] if len(sys.argv) > 1 else 'metadata/dataset_mosquito'
+    dataset_dir = sys.argv[2] if len(sys.argv) > 2 else 'data/dataset_mosquito'
 
     create_folder(folder_path)
     rename_images_in_folder(dataset_dir)
