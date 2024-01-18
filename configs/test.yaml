@@ -1,16 +1,17 @@
 experiment:
-  name: API_res50 1
+  name: API_res101_1
   cuda: [0]
 dataset:
   name: 
   root_dir: data/dataset_mosquito
   meta_dir: metadata/dataset_mosquito
-  batch_size: 24
+  batch_size: 24 # Adjust
   num_workers: 4
   transformer:
-    resize_size: 300
     image_size: 224
+    resize_size: 256
 model:
   name: APINet
-  num_classes: 3
-  load: results/APINet/API_res50 1/best_model.pth
+  num_classes: 12
+  load: results/APINet/API_res101_1/best_model.pth
+  labels: ['Aedes Camptorhynchus', 'Aedes Hesperonotius', 'Aedes Notoscriptus', 'Aedes Ratcliffei', 'Aedes Vigilax', 'Anopheles Annulipes', 'Coquillettidia species near linealis Ben Lomond Species', 'Culex Annulirostris', 'Culex Australicus', 'Culex Quinquefasciatus', 'Culex Globocoxitus', 'Culex Latus']
