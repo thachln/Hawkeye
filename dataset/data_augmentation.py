@@ -1,6 +1,6 @@
 import sys
 import skimage
-from scipy import ndarray
+from numpy import ndarray
 from skimage import io, transform, util
 import random
 from pathlib import Path

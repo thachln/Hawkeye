@@ -1,11 +1,13 @@
-rem kích hoạt biến môi trường
-call .env\Scripts\activate
+@ECHO OFF
+rem Prepare data/dataset by uncompress file data/dataset.zip into data/dataset
+
+rem Activate the virtual environment
+call venv\Scripts\activate
 rem update pip
 python -m pip install --upgrade pip
-rem Giải nén file data/dataset.zip chạy trên windows sau đó copy dataset giải nen vào thư mục data
-pip install scikit-image
-rem chạy lệnh sau để tăng cường dữ liệu
+
+rem Perform data augmentation
 python dataset/data_augmentation.py
-rem Taoj file metadata
+rem Generate metadata: train.txt, val.txt 
 python dataset/metadata.py
 
