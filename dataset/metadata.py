@@ -6,7 +6,8 @@ import re
 
 def transform_image_path(img_path):
     # Replace all sample '/' to '\'
-    standardized_path = img_path.replace('/', '\\')
+    # standardized_path = img_path.replace('/', '\\')
+    standardized_path = img_path
     
     # Search all charater number in string and remove space it 
     standardized_path = re.sub(r'\s*\(\s*(\d+)\s*\)\s*', r'\1', standardized_path)

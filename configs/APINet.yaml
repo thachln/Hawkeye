@@ -8,7 +8,7 @@ dataset:
   name: mosquito
   root_dir: data/dataset_mosquito
   meta_dir: metadata/dataset_mosquito
-  n_classes: 12   # Number of categories.
+  n_classes: 3   # Number of categories.
   n_samples: 4    # Number of samples for each category.
   batch_size: 24  # For validating stage only.
   num_workers: 4
@@ -17,7 +17,7 @@ dataset:
     resize_size: 256
 model:
   name: APINet
-  num_classes: 12
+  num_classes: 3
 #  load: results/APINet/API_res101_1/best_model.pth     # Path to load model.
 train:
   epoch: 100          # Total num of epochs.
