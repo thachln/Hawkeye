@@ -162,7 +162,7 @@ cython_debug/
 # Experiment results
 results/
 # Fine-grained image datasets
-data/*
+
 
 model_weights/
 
