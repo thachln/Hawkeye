@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import numpy as np
 
-from model.backbone import resnet101
+from model.backbone import resnet152
 from model.registry import MODEL
 
 
@@ -13,7 +13,7 @@ class APINet(nn.Module):
         super(APINet, self).__init__()
         self.num_classes = config.num_classes
 
-        resnet = resnet101(pretrained=True)
+        resnet = resnet152(pretrained=True)
         layers = list(resnet.children())[:-2]
 
         self.backbone = nn.Sequential(*layers)
