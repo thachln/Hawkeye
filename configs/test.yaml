@@ -1,5 +1,5 @@
 experiment:
-  name: API_res101_1
+  name: API_res152_v0.1
   cuda: [0]
 dataset:
   name: 
@@ -12,6 +12,6 @@ dataset:
     resize_size: 256
 model:
   name: APINet
-  num_classes: 12
-  load: results/APINet/API_res101_1/best_model.pth
-  labels: ['Aedes Camptorhynchus', 'Aedes Hesperonotius', 'Aedes Notoscriptus', 'Aedes Ratcliffei', 'Aedes Vigilax', 'Anopheles Annulipes', 'Coquillettidia species near linealis Ben Lomond Species', 'Culex Annulirostris', 'Culex Australicus', 'Culex Quinquefasciatus', 'Culex Globocoxitus', 'Culex Latus']
+  num_classes: 3
+  load: results/APINet/API_res152_v0.1/best_model.pth
+  labels: ['aedes ', 'anopheles ', 'culex']
