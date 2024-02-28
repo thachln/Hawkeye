@@ -297,8 +297,8 @@ class Trainer(object):
             if epoch != 0 and (epoch + 1) % config.save_frequence == 0:
                 self.logger.info('Saving model ...')
                 self.save_model()
-                # self.logger.info('Saving checkpoint ...')
-                # self.save_checkpoint()
+                self.logger.info('Saving checkpoint ...')
+                self.save_checkpoint()
             if is_best:
                 self.logger.info('Saving best model ...')
                 self.save_model('best_model.pth')
